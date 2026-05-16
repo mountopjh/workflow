@@ -1,0 +1,48 @@
+# V6.0 通用工作流流程配置
+# 此文件控制 大总管（Workbuddy）总线行为与项目级路径。
+#
+# ── 路径约定（不可修改）─────────────────────────────────────────────────────
+# <项目根> 永远 = 本 workflow 文件夹的父目录
+# 即：如果本文件位于   <X>/workflow_template/config/workflow.toml
+#     那么项目根就是  <X>/
+# 所有项目运行时产物（Shadow/、src/、tests/、plan/、reviews/、docs/、CURRENT_TASK.md、EXECUTOR_OUTPUT.md）
+# 均位于项目根下，与 workflow 文件夹同级。
+
+[project]
+# 项目展示名（仅用于 Webhook body）
+name = "MyProject"
+
+[bus_windows]
+# 大总管按窗口标题切窗。请填入你为每个角色配的客户端窗口标题（关键字或正则）。
+# 示例：planner_pattern = "Kiro"   executor_pattern = "Codex"   auditor_pattern = "CodeBuddy"
+# 留空字符串表示该角色暂未启用。
+planner_pattern = ""
+executor_pattern = ""
+auditor_pattern = ""
+
+[timeouts]
+# 监听超时（秒），20 分钟无新信号触发 BLOCKED 告警
+listen_timeout_sec = 1200
+
+[circuit_breaker]
+# 累计驳回触发熔断的阈值
+escalate_after_rejects = 3
+
+[webhook]
+# 钉钉/飞书机器人 URL，留空 "" 表示禁用，告警改为本地写日志
+url = ""
+# 告警默认事件名
+default_event = "ESCALATE"
+
+[test_commands]
+# 执行者 跑测试的默认命令（若工单 §6 未指定则用此处）
+# 按项目语言改：
+#   Python:  "pytest tests/ -v"
+#   Node:    "npm test"
+#   Go:      "go test ./..."
+#   Rust:    "cargo test"
+default = "pytest tests/ -v"
+
+[file_atomic]
+# 原子写约定：临时后缀
+tmp_suffix = ".tmp"

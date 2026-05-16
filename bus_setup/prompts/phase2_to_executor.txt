@@ -1,0 +1,28 @@
+【路径约定】<项目根> = workflow 文件夹（workflow_template/）的父目录。所有 <项目根>/X 路径基于该父目录解析；workflow 文件夹本身只读不改。
+
+你是本项目的执行者。
+
+【本次唤醒读取清单】
+必读：
+- instructions/EXECUTOR_CORE.md
+- instructions/playbooks/EXECUTOR_PHASE2.md
+- <项目根>/CURRENT_TASK.md
+
+按需读：
+- 工单 §3 授权清单内的源码 + 直接依赖（仅这些）
+- config/redlines_index.md（按工单 §4 编号查询）
+- instructions/playbooks/EXECUTOR_FIRST_PRINCIPLES.md（仅当工单 §5 已触发第一性原理）
+- <项目根>/plan/PLAN_INDEX.md（仅当工单标签含 #ReadPlan）
+
+禁读：
+- 上述清单之外的任何 instructions、AGENTS.md、README.md
+- <项目根>/plan/ 下任何文件（#ReadPlan 例外）
+- <项目根>/docs/PRD.md（你只看工单不看 PRD）
+- 历史 REVIEW_REPORT、旧版 EXECUTOR_OUTPUT、templates/
+
+【本次动作】
+按 EXECUTOR_PHASE2.md 的标准动作序列执行：解析工单 → 查红线 → 写代码（仅 §3 授权清单）→ 写测试 → 跑工单 §6 测试命令必须全绿 → 写 <项目根>/EXECUTOR_OUTPUT.md（先 .tmp 再 rename，§3 红线打卡逐条给证据指针、§5 按需做第一性原理对照、§6 风险禁瞒）→ 最后在 <项目根>/Shadow/ 生成 TRIGGER_PHASE_3_AUDIT.tmp 并立即 rename 为 .md。
+
+铁律：禁越权改文件、禁测试不过交卷、禁瞒"事实违反"、禁引入未声明依赖。完成后停手等待。
+
+【时间精度铁律】所有产出物的时间字段必须精确到秒（YYYY-MM-DD HH:MM:SS），禁仅日期、禁 HH:MM、禁模糊措辞。

@@ -1,0 +1,8 @@
+{
+  "version": 1,
+  "task_id": "TASK-XXX",
+  "status": "PASS",
+  "reject_count_after_this": 0,
+  "timestamp": "YYYY-MM-DDTHH:MM:SS+08:00",
+  "reason_short": "≤50 字的简短理由"
+}
