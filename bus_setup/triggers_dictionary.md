@@ -15,6 +15,8 @@
 | `TRIGGER_ROUTE_A_PASS.md` | 规划师客户端 | `prompts/route_a_pass.txt` | **先调 `bus_setup/git_commit.bat`（自动 commit + 按需打 tag）→ 再切窗注入 → 删除信号** |
 | `TRIGGER_ROUTE_B_REJECT.md` | 执行者客户端 | `prompts/route_b_reject.txt` | 同上（不 commit） |
 | `TRIGGER_ROUTE_C_ESCALATE.md` | 规划师客户端 | `prompts/route_c_escalate.txt` | **先调 Webhook（POST `webhook_url`）→ 再切窗注入 → 删除信号**（不 commit） |
+| `TRIGGER_QUERY_TO_PLANNER.md` | 规划师客户端 | `prompts/query_to_planner.txt` | 切窗 → 剪贴板 → Ctrl+V → Enter → 删除信号（不 commit、不计驳回） |
+| `TRIGGER_QUERY_REPLY.md` | 执行者客户端 | `prompts/query_reply.txt` | 同上（不 commit、不计驳回） |
 
 ---
 
@@ -57,3 +59,43 @@
 3. **路由完，必删信号**：删除是最后一步，防止重复触发。
 4. **窗口标题识别**：大总管通过窗口标题精准切窗。如果标题被改，路由会失败，必须在 大总管配置里同步更新窗口标题匹配规则。
 5. **剪贴板强注**：所有提示词必须通过"写剪贴板 → Ctrl+V"注入，**禁止**用模拟键盘逐字打。
+6. **请示通道独立**：`QUERY_*` 路由**不影响**主流程驳回累加器。规划师回复后，执行者继续接着原工单干，不重发 PHASE_2、不写 EXECUTOR_OUTPUT。
+
+---
+
+## 4. QUERY 请示通道（执行者 → 规划师 → 执行者）
+
+**何时用**：执行者实现到一半发现工单本身有问题（如未声明依赖、接口契约与依赖冲突、步骤之间相互矛盾），又不至于阻塞全部进度。走请示比走 REJECT 更省一次驳回额度。
+
+**何时不用**：
+- 工单完全没法干（接口设计错误、范围越界）→ 仍走 REJECT 路径，由审计员发现并 ESCALATE
+- 实现纯技术问题（不知道用什么算法）→ 不要请示，自己看 TECH_DESIGN 引用章节决定
+
+**流程**：
+```
+执行者发现问题
+    │
+    ▼
+执行者写 <项目根>/QUERY.md（含问题、上下文、倾向方案）
+执行者投递 Shadow/TRIGGER_QUERY_TO_PLANNER.md
+    │
+    ▼
+大总管路由 → 规划师
+    │
+    ▼
+规划师追加回复到 QUERY.md 末尾（或修订 CURRENT_TASK 递增版本，仍不计驳回）
+规划师投递 Shadow/TRIGGER_QUERY_REPLY.md
+    │
+    ▼
+大总管路由 → 执行者
+    │
+    ▼
+执行者按回复继续原工单（不重起 PHASE_2，不重写 EXECUTOR_OUTPUT）
+最终交卷时仍按 PHASE_3 走审计
+```
+
+**铁律**：
+- 请示**不计**驳回累加器
+- QUERY.md 由执行者起头、规划师回复，对话式追加（每段标注角色 + 时间戳到秒）
+- 同一工单的 QUERY 次数无硬上限，但 ≥ 3 次仍未对齐建议主动 ESCALATE
+- 工单交卷归档时（PASS 后）QUERY.md 应被规划师挪到 `<项目根>/_archive/queries/<task_id>_query.md`

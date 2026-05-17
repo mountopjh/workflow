@@ -1,33 +1,13 @@
-【路径约定】<项目根> = workflow 文件夹（workflow_template/）的父目录。所有 <项目根>/X 路径基于该父目录解析；workflow 文件夹本身只读不改。
+【路径约定】<项目根> = workflow_template/ 的父目录。
 
-执行者，刚刚的代码被审计员驳回 [STATUS: REJECT]。
+执行者，刚刚的代码被 [STATUS: REJECT]。
 
-【本次唤醒读取清单】
-必读：
+本次唤醒必读：
 - instructions/EXECUTOR_CORE.md
 - instructions/playbooks/EXECUTOR_REWORK.md
 - <项目根>/CURRENT_TASK.md
-- <项目根>/reviews/ 下编号最大的那份 REVIEW_REPORT_v[n].md 正文（仅最新 1 份，禁读历史）
+- <项目根>/reviews/ 中编号最大的 REVIEW_REPORT_v[n].md 正文（仅最新 1 份）
 
-按需读：
-- 工单 §3 授权清单内的源码 + 直接依赖
-- config/redlines_index.md
-- instructions/playbooks/EXECUTOR_FIRST_PRINCIPLES.md（仅当工单 §5 已触发或 REVIEW §4 涉及第一性原理）
+按 EXECUTOR_REWORK.md 标准动作序列执行：定位 REVIEW 中每条问题、注意累加器接近 3 即下次熔断、仍只在 §3 授权清单内动手、重跑 §6 测试全绿、重写 EXECUTOR_OUTPUT.md（§6 必须显式回应 REVIEW 的每条问题）、投递 TRIGGER_PHASE_3_AUDIT.md。
 
-禁读：
-- 上述清单之外的任何 instructions、AGENTS.md、README.md
-- <项目根>/plan/ 下任何文件（#ReadPlan 例外）
-- <项目根>/docs/PRD.md
-- 其他历史 REVIEW、旧版 EXECUTOR_OUTPUT、templates/
-
-【本次动作】
-按 EXECUTOR_REWORK.md 的标准动作序列执行：
-1. 读最新 REVIEW 正文，定位 §1-§5 中每条问题，注意累加器当前值（接近 3 即下次熔断）。
-2. 仍只在工单 §3 授权清单内动手；针对性修，不做无关重构。
-3. 重跑工单 §6 测试，必须全绿。
-4. 重写 <项目根>/EXECUTOR_OUTPUT.md（先 .tmp 再 rename），§6 风险段必须显式回应 REVIEW 的每条问题。
-5. 最后在 <项目根>/Shadow/ 生成 TRIGGER_PHASE_3_AUDIT.tmp 并立即 rename 为 .md。
-
-铁律：跨出授权清单 = 二次 REJECT；累加器接近 3 时务必修到位；解决不了在 §6 写"建议规划师重新拆解"。完成后停手等待。
-
-【时间精度铁律】所有产出物的时间字段必须精确到秒（YYYY-MM-DD HH:MM:SS），禁仅日期、禁 HH:MM、禁模糊措辞。
+跨出授权清单 = 二次 REJECT。解决不了在 §6 写"建议规划师重新拆解"。完成后停手等待。条件读 / 禁读 / 时间戳精度 / 铁律 → 见 CORE。

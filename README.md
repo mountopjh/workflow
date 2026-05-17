@@ -47,7 +47,6 @@
 │   │   ├── PLANNER_CORE.md                       ← 规划师 每次必读
 │   │   ├── EXECUTOR_CORE.md                      ← 执行者 每次必读
 │   │   ├── AUDITOR_CORE.md                  ← 审计员 每次必读
-│   │   ├── PLANNER_INSTRUCTIONS.md / EXECUTOR_INSTRUCTIONS.md / AUDITOR_INSTRUCTIONS.md  ← 索引页
 │   │   └── playbooks/                         ← 场景特化（按 prompts 点名加载）
 │   │       ├── PLANNER_PHASE1.md / PLANNER_ESCALATE.md / PLANNER_FIRST_PRINCIPLES.md
 │   │       ├── EXECUTOR_PHASE2.md / EXECUTOR_REWORK.md / EXECUTOR_FIRST_PRINCIPLES.md
@@ -121,6 +120,19 @@
    ROUTE_B_REJECT ─► 回 执行者 返工 → 回到第三段
    ROUTE_C_ESCALATE ► Webhook 报警 + 回 规划师 改 PLAN
 ```
+
+**旁路：QUERY 请示通道（不计驳回）**
+
+执行者实现到一半发现工单本身有问题但又不至于完全卡死时，可走请示路径：
+```
+执行者 写 QUERY.md → Shadow/TRIGGER_QUERY_TO_PLANNER.md
+        ▼
+规划师 在 QUERY.md 追加回复（必要时递增 CURRENT_TASK 版本号）
+        ▼  Shadow/TRIGGER_QUERY_REPLY.md
+执行者 接着原工单干（不重写 EXECUTOR_OUTPUT、不重发 PHASE_2）
+```
+
+请示**不影响驳回累加器**。详情见 `bus_setup/triggers_dictionary.md §4`。
 
 ---
 

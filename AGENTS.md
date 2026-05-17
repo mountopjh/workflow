@@ -1,6 +1,6 @@
 # 🤖 V6.0 多 AI 协作机制总览（人类阅读用）
 
-> **AI 角色禁止读取本文件。** 各 AI 仅读自己专属的 `instructions/*_INSTRUCTIONS.md`。  
+> **AI 角色禁止读取本文件。** 各 AI 仅读自己专属的 `instructions/*_CORE.md` + 场景对应的 1 份 `playbooks/*.md`。  
 > 本文件供项目维护者从全局角度理解协作机制、做架构决策。
 
 ---
@@ -36,6 +36,16 @@
 
 **规划师不允许凭空发明任务**。所有工单内容必须能在 `EXECUTION_PLAN.md` 中找到对应的"环节 N · 工单 K"。若执行方案与实际对不上号 → 走 ESCALATE 路径等待人类修订方案。
 
+**版本三级校验**（规划师每次发单前必做）：
+
+| 校验对 | 失败动作 |
+|---|---|
+| `PLAN_INDEX` 关联版本 == `EXECUTION_PLAN` 元信息版本 | ESCALATE |
+| `EXECUTION_PLAN` 元信息"关联 PRD 版本" == `PRD` 元信息版本 | ESCALATE |
+| `EXECUTION_PLAN` 元信息"关联技术文档版本" == `TECH_DESIGN` 元信息版本 | ESCALATE |
+
+任一不一致说明上游文档被改但下游未跟，必须人工对齐版本，禁自行猜测拆单。
+
 ---
 
 ## 0.6 自动 Git 提交（PASS 路径）
@@ -62,8 +72,8 @@
 
 | 角色 | 实体 | 核心产出 | 触发它的信号 | 它产出的信号 |
 |---|---|---|---|---|
-| 规划师 | 规划师客户端 | `PLAN_INDEX.md` / `CURRENT_TASK.md` | `TRIGGER_PHASE_1_PLAN.md` / `TRIGGER_ROUTE_A_PASS.md` / `TRIGGER_ROUTE_C_ESCALATE.md` | `TRIGGER_PHASE_2_EXECUTE.md` |
-| 执行者 | 执行者客户端 | 源码 + 测试 + `EXECUTOR_OUTPUT.md` | `TRIGGER_PHASE_2_EXECUTE.md` / `TRIGGER_ROUTE_B_REJECT.md` | `TRIGGER_PHASE_3_AUDIT.md` |
+| 规划师 | 规划师客户端 | `PLAN_INDEX.md` / `CURRENT_TASK.md` | `TRIGGER_PHASE_1_PLAN.md` / `TRIGGER_ROUTE_A_PASS.md` / `TRIGGER_ROUTE_C_ESCALATE.md` / `TRIGGER_QUERY_TO_PLANNER.md` | `TRIGGER_PHASE_2_EXECUTE.md` / `TRIGGER_QUERY_REPLY.md` |
+| 执行者 | 执行者客户端 | 源码 + 测试 + `EXECUTOR_OUTPUT.md` | `TRIGGER_PHASE_2_EXECUTE.md` / `TRIGGER_ROUTE_B_REJECT.md` / `TRIGGER_QUERY_REPLY.md` | `TRIGGER_PHASE_3_AUDIT.md` / `TRIGGER_QUERY_TO_PLANNER.md` |
 | 审计员 | 审计员客户端 | `REVIEW_REPORT_v[n].md` + `.meta.json` | `TRIGGER_PHASE_3_AUDIT.md` | `TRIGGER_ROUTE_A/B/C_*.md` |
 | 大总管 | Workbuddy | 路由动作 | 监听 `Shadow/` | （删除信号） |
 
@@ -96,13 +106,36 @@
 
 **触发**（任一满足即三方都开此段）：
 - 任务属性是新功能 / 架构选型 / 性能优化；或
-- 工单已被驳回 ≥ 1 次；或
+- **当前工单累计驳回 ≥ 1**（权威来源：`reviews/REVIEW_REPORT_v[*].meta.json` 中匹配 `task_id` 的最大版本号条目的 `reject_count_after_this`，**不是** `PLAN_INDEX` 的项目级总数）；或
 - 规划师 在工单标题打 `#FirstPrinciples`。
 
 **三方动作**：
 - 规划师：在 `CURRENT_TASK.md` 列 3 条不可压缩的根本约束，从约束反推方案；
 - 执行者：在 `EXECUTOR_OUTPUT.md` 逐条对照实现是否真满足约束；
 - 审计员：在 `REVIEW_REPORT.md` 反向追问业务根本目标，方向不对可直接 REJECT 要求重写工单（**方向否决权**优先级 > 代码细节）。
+
+---
+
+## 4.5 QUERY 请示通道（旁路，不计驳回）
+
+**目的**：执行者实现到一半发现工单本身有问题但不至于完全卡死时，避免走完一整轮 REJECT 才能改工单——浪费驳回额度、污染 `reject_count`。
+
+**流程**：
+```
+执行者 写 QUERY.md → Shadow/TRIGGER_QUERY_TO_PLANNER.md
+        ▼
+规划师 在 QUERY.md 追加回复（必要时递增 CURRENT_TASK 版本号）
+        ▼  Shadow/TRIGGER_QUERY_REPLY.md
+执行者 接着原工单干（不重写 EXECUTOR_OUTPUT、不重发 PHASE_2）
+```
+
+**铁律**：
+- QUERY 路由**不影响**驳回累加器
+- QUERY.md 内容审计员可见，执行者禁瞒
+- 同一工单 QUERY ≥ 3 次仍未对齐 → 主动 ESCALATE
+- 不能用 QUERY 替代 REJECT 或 ESCALATE：完全没法干仍正常交卷让审计员 REJECT；架构级偏航主动写 ESCALATE 请求
+
+详见 `bus_setup/triggers_dictionary.md §4`。
 
 ---
 
@@ -124,8 +157,8 @@
 
 | 角色 | 必读 | 条件读 | 禁读 |
 |---|---|---|---|
-| 规划师 | `PLANNER_CORE.md` + 当次 playbook、`PLAN_INDEX.md` | 排单读 `PLAN_BACKLOG.md`；ESCALATE 读最新 1 份 REVIEW 正文；触发条件成立加载 `PLANNER_FIRST_PRINCIPLES.md` | AGENTS.md、执行者任何产出、其他角色 instructions、PLAN_DONE.md、templates |
-| 执行者 | `EXECUTOR_CORE.md` + 当次 playbook、`CURRENT_TASK.md` | 返工读最新 1 份 REVIEW 正文；按编号查 `redlines_index.md`；工单 §5 触发加载 `EXECUTOR_FIRST_PRINCIPLES.md` | AGENTS.md、PLAN（除 #ReadPlan）、其他角色 instructions、PRD、历史 REVIEW、templates |
+| 规划师 | `PLANNER_CORE.md` + 当次 playbook、`PLAN_INDEX.md`、`EXECUTION_PLAN.md` | 排单读 `PLAN_BACKLOG.md`；按 task_id 查 `reviews/*.meta.json`；ESCALATE 读最新 1 份 REVIEW 正文；处理 QUERY 时读 `QUERY.md` + `CURRENT_TASK.md`；触发条件成立加载 `PLANNER_FIRST_PRINCIPLES.md` | AGENTS.md、执行者源码产出、其他角色 instructions、PLAN_DONE.md、templates |
+| 执行者 | `EXECUTOR_CORE.md` + 当次 playbook、`CURRENT_TASK.md` | 工单 §3 授权清单内的源码 + 直接依赖；返工读最新 1 份 REVIEW 正文；按编号查 `redlines_index.md`；**工单引用时按章节读 `TECH_DESIGN.md`**；QUERY 时读 `QUERY.md`；工单 §5 触发加载 `EXECUTOR_FIRST_PRINCIPLES.md` | AGENTS.md、PLAN（除 #ReadPlan）、其他角色 instructions、PRD、`EXECUTION_PLAN.md`、历史 REVIEW、templates |
 | 审计员 | `AUDITOR_CORE.md` + `AUDITOR_AUDIT.md`、`CURRENT_TASK.md`、`EXECUTOR_OUTPUT.md`、全部 `.meta.json`、真实源码 | 累加器 ≥ 1 时加载 `AUDITOR_FIRST_PRINCIPLES.md` + 上一份 REVIEW 正文；按需查 `redlines_index.md` | AGENTS.md、PLAN 任何文件、其他角色 instructions、PRD、历史 REVIEW 正文（除上述例外）、templates |
 
 ---

@@ -27,18 +27,19 @@
 
 **条件读**（提示词或 playbook 显式允许时才读）：
 - `<项目根>/plan/PLAN_BACKLOG.md`（排下一单时）
+- `<项目根>/reviews/REVIEW_REPORT_v[*].meta.json`（**仅 .meta.json，按 task_id 查询当前工单的驳回数；REVIEW 正文仍禁读，除下一条例外**）
 - `<项目根>/reviews/REVIEW_REPORT_v[n].md` 中**编号最大的一份正文**（仅 ESCALATE 救火）
-- `<项目根>/docs/PRD.md`（首单或 ESCALATE 时回到根本目标）
+- `<项目根>/QUERY.md`（仅当收到 `TRIGGER_QUERY_TO_PLANNER` 唤醒时）
+- `<项目根>/CURRENT_TASK.md`（仅当处理 QUERY 时需要核对工单内容）
+- `<项目根>/docs/PRD.md`(首单或 ESCALATE 时回到根本目标）
 - `<项目根>/docs/TECH_DESIGN.md`（首单或步骤需要查接口/数据结构时）
 - `playbooks/PLANNER_FIRST_PRINCIPLES.md`（仅当本工单触发第一性原理时）
 
 **禁读**：
-- `AGENTS.md`、`README.md`
-- `EXECUTOR_*` / `AUDITOR_*` 任何文件
-- `<项目根>/EXECUTOR_OUTPUT.md`
-- `<项目根>/plan/PLAN_DONE.md`
-- 历史 `REVIEW_REPORT_v[n].md` 正文（除上述例外）
-- `templates/` 下任何文件（格式已内联在本 CORE，无需另读）
+- `AGENTS.md`、`README.md`（项目人类总览，与你无关）
+- `EXECUTOR_*` / `AUDITOR_*` 任何文件（角色越权）
+- `<项目根>/EXECUTOR_OUTPUT.md`（不能被执行者自评影响判断）
+- 凡不在上方"必读 + 条件读"白名单内的文件一律不读
 
 ---
 

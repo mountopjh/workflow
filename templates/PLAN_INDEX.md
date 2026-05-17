@@ -18,8 +18,10 @@
 ## 待打 Git tag
 - （留空 / 或：环节 1 全部完成，待打 phase-1-done）
 
-## 累计统计
-- 完成: 0 单 | 驳回: 0 次 | 熔断: 0 次
+## 累计统计（项目级，仅供人类总览，不作为 #FirstPrinciples 触发判定依据）
+- 完成: 0 单 | 项目总驳回: 0 次 | 熔断: 0 次
+
+> 单个工单的驳回数权威来源是 `reviews/REVIEW_REPORT_v[*].meta.json` 的 `reject_count_after_this` 字段。
 
 ## 文件指引（按需读）
 - 待办全集 → PLAN_BACKLOG.md（仅规划师排单时读）

@@ -20,7 +20,12 @@
 ### Step 1 · 读 PLAN_INDEX 与执行方案
 - 从 `PLAN_INDEX.md` 取当前焦点（哪个环节 / 哪个工单已完成 / 下一个候选）。
 - 翻 `EXECUTION_PLAN.md` 找到对应"环节 N"。
-- 验证 `EXECUTION_PLAN.md` 的版本号是否与 `PLAN_INDEX.md` 中记录的一致；不一致 → 投递 ESCALATE，因为执行方案可能被改了。
+- **三级版本校验**（任一不一致 → 投递 ESCALATE，不得自行拆单）：
+  1. `PLAN_INDEX.md` 的"关联执行方案版本" == `EXECUTION_PLAN.md` 元信息"版本"
+  2. `EXECUTION_PLAN.md` 元信息"关联 PRD 版本" == `<项目根>/docs/PRD.md` 元信息"版本"（首单或读 PRD 时校验，仅读这两份元信息表，禁全文）
+  3. `EXECUTION_PLAN.md` 元信息"关联技术文档版本" == `<项目根>/docs/TECH_DESIGN.md` 元信息"版本"（读 TECH_DESIGN 时校验）
+
+  > 任意校验失败说明上游文档被改但下游未跟，必须人工介入决定如何对齐版本——你只能 ESCALATE，不能猜。
 
 ### Step 2 · ROUTE_A_PASS 专属：归档上一单
 （仅 ROUTE_A_PASS 触发时执行；PHASE_1 跳过）
@@ -36,9 +41,23 @@
 - 不允许跳过工单、不允许合并工单、不允许新增工单。
 - 检查该工单是否需要打 `#FirstPrinciples` 标签：
   - 执行方案中该步骤显式引用第一性原理；或
-  - 工单累计驳回 ≥ 1（看 PLAN_INDEX 累计统计）；或
+  - **当前工单累计驳回 ≥ 1**（查询方式见下方"驳回数查询"）；或
   - 属新功能 / 架构选型 / 性能优化。
 - 如命中 → **加载 `PLANNER_FIRST_PRINCIPLES.md`** 完成 §5 段。
+
+#### 驳回数查询（权威来源 = `.meta.json`）
+
+驳回数的**唯一权威来源**是 `<项目根>/reviews/REVIEW_REPORT_v[*].meta.json`，不要看 `PLAN_INDEX.md` 的"累计统计"（那是项目级总数，不是单个工单）。
+
+查询步骤：
+1. 列出 `<项目根>/reviews/` 下所有 `.meta.json`
+2. 筛选 `task_id` 等于即将发出的工单 ID 的条目
+3. 取版本号最大的那条，读 `reject_count_after_this` 字段
+4. 该值即"当前工单累计驳回数"
+
+若 `reviews/` 目录不存在或无匹配条目 → 累计为 0（首次发单/全新工单）。
+
+> 仅本步骤允许 `ls reviews/` 与读 `.meta.json`，**禁读** REVIEW 正文（仍在禁读清单内，除 ESCALATE 路径外）。
 
 ### Step 4 · 写 CURRENT_TASK.md
 按 `PLANNER_CORE.md §2` 的骨架填全 6 段。**关键约束**：

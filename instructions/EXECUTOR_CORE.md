@@ -27,18 +27,17 @@
 **条件读**（提示词或 playbook 显式允许时才读）：
 - 工单 §3 授权清单内的 `<项目根>/src/` 与 `<项目根>/tests/` 文件 + 直接依赖
 - `config/redlines_index.md`（按工单 §4 编号查询）
+- `<项目根>/docs/TECH_DESIGN.md` —— **仅当工单步骤显式引用 `参照 TECH_DESIGN.md §X.Y`，只读引用的具体章节**，禁全文读
+- `<项目根>/QUERY.md`（仅当你发起或收到规划师请示回复时读）
 - `<项目根>/reviews/REVIEW_REPORT_v[n].md` 中**编号最大的一份正文**（仅 ROUTE_B_REJECT 返工时）
 - `playbooks/EXECUTOR_FIRST_PRINCIPLES.md`（仅当工单 §5 已触发第一性原理时）
 - `<项目根>/plan/PLAN_INDEX.md`（仅工单含 `#ReadPlan` 标签时）
 
 **禁读**：
-- `AGENTS.md`、`README.md`
-- `PLANNER_*` / `AUDITOR_*` 任何文件
-- `<项目根>/plan/` 下任何文件（除 `#ReadPlan` 例外）
-- `<项目根>/docs/PRD.md`（你只看工单，不看 PRD）
-- 历史 `REVIEW_REPORT_v[n].md` 正文（除上述例外）
-- 旧版 `EXECUTOR_OUTPUT.md`
-- `templates/` 下任何文件（格式已内联在本 CORE）
+- `AGENTS.md`、`README.md`（项目人类总览，与你无关）
+- `PLANNER_*` / `AUDITOR_*` 任何文件（角色越权）
+- `<项目根>/docs/PRD.md`、`<项目根>/docs/EXECUTION_PLAN.md`（你只看工单，需求与拆单都不归你）
+- 凡不在上方"必读 + 条件读"白名单内的文件一律不读
 
 ---
 
@@ -120,6 +119,43 @@
 - ❌ 读取本 CORE "禁读"清单中的任何文件
 - ✅ 改完即跑测试，跑过再交卷
 - ✅ 风险/遗留如实记录在 §6
+
+---
+
+## 5. QUERY 请示通道（不计驳回，介于"硬干"和"REJECT"之间）
+
+**用法**：实现到一半发现工单本身有问题（接口契约冲突、未声明依赖、步骤相互矛盾），又不至于阻塞全部进度时使用。
+
+**步骤**：
+1. 暂停当前实现（保留半成品 `.tmp` 文件）
+2. 写 `<项目根>/QUERY.md`（先 `.tmp` → `rename`），格式：
+
+```
+# QUERY · {task_id}
+
+## 请示 [YYYY-MM-DD HH:MM:SS]
+
+**问题**：<具体问题>
+
+**上下文**：<我已经做到了什么 / 卡在哪>
+
+**倾向方案**：<我打算这么干，对不对>（可选）
+
+**影响范围**：<这个决策会改哪些文件 / 哪些接口>
+```
+
+3. 投递 `<项目根>/Shadow/TRIGGER_QUERY_TO_PLANNER.tmp` → `rename` 为 `.md`
+4. **停手等待**规划师回复
+
+收到 `query_reply` 唤醒后：
+- 看 `QUERY.md` 末尾"规划师回复"段
+- 检查 `CURRENT_TASK.md` 版本号是否递增（如递增按新版本继续）
+- 接着原工单的实现，**不重起 PHASE_2、不写新 EXECUTOR_OUTPUT、不重新投递 PHASE_3**——直到工单完成再走正常交卷流程
+
+**注意**：
+- QUERY 不计驳回累加器，但内容审计员可见，禁瞒
+- 同一工单 QUERY ≥ 3 次仍未对齐 → 主动 ESCALATE
+- 不能用 QUERY 替代 REJECT 或 ESCALATE：工单完全没法干 → 仍正常交卷让审计员 REJECT；架构级偏航 → 主动写 EXECUTOR_OUTPUT 请求 ESCALATE
 
 ---
 

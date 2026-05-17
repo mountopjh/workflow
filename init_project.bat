@@ -6,6 +6,14 @@ setlocal
 set "WF_ROOT=%~dp0"
 for %%I in ("%WF_ROOT%..") do set "PROJECT_ROOT=%%~fI"
 
+REM ─── 路径硬约定自检：本目录名必须为 workflow_template ───
+for %%I in ("%WF_ROOT%.") do set "WF_NAME=%%~nxI"
+if /I not "%WF_NAME%"=="workflow_template" (
+    echo [FAIL] workflow folder must be named "workflow_template" but got "%WF_NAME%".
+    echo        prompts and instructions reference this name verbatim. Rename it back.
+    exit /b 2
+)
+
 echo.
 echo ========================================
 echo  V6.0 Init Project

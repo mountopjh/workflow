@@ -1,0 +1,15 @@
+# Python 缓存
+__pycache__/
+*.pyc
+
+# 大总管运行时产物（WorkBuddy 调试截图、临时剪贴板文件）
+Shadow/
+
+# 运行时临时触发器（.tmp 是原子重命名前的中间态，不应入库）
+*.tmp
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
