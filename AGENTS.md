@@ -75,7 +75,7 @@
 | 规划师 | 规划师客户端 | `PLAN_INDEX.md` / `CURRENT_TASK.md` | `TRIGGER_PHASE_1_PLAN.md` / `TRIGGER_ROUTE_A_PASS.md` / `TRIGGER_ROUTE_C_ESCALATE.md` / `TRIGGER_QUERY_TO_PLANNER.md` | `TRIGGER_PHASE_2_EXECUTE.md` / `TRIGGER_QUERY_REPLY.md` |
 | 执行者 | 执行者客户端 | 源码 + 测试 + `EXECUTOR_OUTPUT.md` | `TRIGGER_PHASE_2_EXECUTE.md` / `TRIGGER_ROUTE_B_REJECT.md` / `TRIGGER_QUERY_REPLY.md` | `TRIGGER_PHASE_3_AUDIT.md` / `TRIGGER_QUERY_TO_PLANNER.md` |
 | 审计员 | 审计员客户端 | `REVIEW_REPORT_v[n].md` + `.meta.json` | `TRIGGER_PHASE_3_AUDIT.md` | `TRIGGER_ROUTE_A/B/C_*.md` |
-| 大总管 | Workbuddy | 路由动作 | 监听 `Shadow/` | （删除信号） |
+| 大总管 | RPA | 路由动作 | 监听 `Shadow/` | （删除信号） |
 
 ---
 
@@ -163,7 +163,7 @@
 
 ---
 
-## 7. 大总管（Workbuddy）总线的硬边界
+## 7. 大总管（RPA）总线的硬边界
 
 - ✅ 监听 `Shadow/` 文件出现/消失
 - ✅ 激活/切换桌面窗口

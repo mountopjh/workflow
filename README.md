@@ -10,7 +10,7 @@
 
 1. 你写好三份输入文档放进 `<项目根>/docs/`：**PRD**（要解决什么）、**TECH_DESIGN**（用什么方案）、**EXECUTION_PLAN**（按环节+步骤的执行序列）。
 2. 双击 `bootstrap.bat` 投递首封触发信。
-3. **规划师 → 执行者 → 审计员** 三方在本地文件系统里写卷宗、互相点名，**大总管（Workbuddy）是邮差**：监听 `<项目根>/Shadow/`，激活窗口、注入提示词、销毁信号。
+3. **规划师 → 执行者 → 审计员** 三方在本地文件系统里写卷宗、互相点名，**大总管（RPA）是邮差**：监听 `<项目根>/Shadow/`，激活窗口、注入提示词、销毁信号。
 4. 规划师**严格按执行方案拆单**——禁凭空发明任务。
 5. 审计通过则进入下一单 + 自动 `git commit`；某环节最后一单通过则自动打 `git tag`。驳回回炉；累计驳回 3 次熔断 + Webhook 报警。
 6. 全程**所有文件先写 `.tmp`、再 rename 成正式名**。
@@ -24,7 +24,7 @@
 | **规划师** | 规划师专属客户端 | 维护 `PLAN_INDEX.md` → 拆战术工单 `CURRENT_TASK.md` | `instructions/PLANNER_CORE.md` + 场景 playbook |
 | **执行者** | 执行者专属客户端 | 盲读工单 → 写代码+自测 → 产 `EXECUTOR_OUTPUT.md` | `instructions/EXECUTOR_CORE.md` + 场景 playbook |
 | **审计员** | 审计员专属客户端 | 拉真实源码 → 比对裁决 → 出 `REVIEW_REPORT_v[n].md` | `instructions/AUDITOR_CORE.md` + `playbooks/AUDITOR_AUDIT.md` |
-| **总线** | 大总管（Workbuddy） | 监听 `Shadow/` → 激活窗口 → 剪贴板注入 → 销毁信号 | `bus_setup/BUS_SETUP_GUIDE.md` |
+| **总线** | 大总管（RPA） | 监听 `Shadow/` → 激活窗口 → 剪贴板注入 → 销毁信号 | `bus_setup/BUS_SETUP_GUIDE.md` |
 
 > **铁律 1**：大总管永远只搬信、不跑代码。  
 > **铁律 2**：每个 AI 角色**只读自己专属的 CORE + 当前场景 playbook + 工单流转中明确指定的文档**。禁止读其他角色的规则、其他角色的产出原文（除非工单流程明确要求）。
@@ -153,7 +153,7 @@
    - `<项目根>\docs\EXECUTION_PLAN.md` — 按环节+步骤的执行序列（**这份是规划师拆单的唯一依据**）
 5. 编辑 `<项目根>\plan\PLAN_BACKLOG.md` 列出首批任务（也可以直接照执行方案的环节填）。
 6. 启动三个 AI 客户端（规划师 / 执行者 / 审计员），保证窗口标题可被大总管识别。
-7. 启动大总管（Workbuddy），按 `bus_setup/BUS_SETUP_GUIDE.md` 配置（含自动 git commit 步骤）。
+7. 启动大总管（RPA），按 `bus_setup/BUS_SETUP_GUIDE.md` 配置（含自动 git commit 步骤）。
 8. **双击 `bootstrap.bat`** 投递首封信。
 9. 必要时 `bootstrap_reset.bat` 清场（自动 `git stash` 保护未提交改动）。
 

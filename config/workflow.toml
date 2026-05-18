@@ -1,5 +1,5 @@
 # V6.0 通用工作流流程配置
-# 此文件控制 大总管（Workbuddy）总线行为与项目级路径。
+# 此文件控制 大总管（RPA）总线行为与项目级路径。
 #
 # ── 路径约定（不可修改）─────────────────────────────────────────────────────
 # <项目根> 永远 = 本 workflow 文件夹的父目录
@@ -10,15 +10,15 @@
 
 [project]
 # 项目展示名（仅用于 Webhook body）
-name = "MyProject"
+name = "镜合 (FileToFile)"
 
 [bus_windows]
 # 大总管按窗口标题切窗。请填入你为每个角色配的客户端窗口标题（关键字或正则）。
 # 示例：planner_pattern = "Kiro"   executor_pattern = "Codex"   auditor_pattern = "CodeBuddy"
 # 留空字符串表示该角色暂未启用。
-planner_pattern = ""
-executor_pattern = ""
-auditor_pattern = ""
+planner_pattern = "Kiro"
+executor_pattern = "Codex"
+auditor_pattern = "CodeBuddy"
 
 [timeouts]
 # 监听超时（秒），20 分钟无新信号触发 BLOCKED 告警
@@ -36,12 +36,8 @@ default_event = "ESCALATE"
 
 [test_commands]
 # 执行者 跑测试的默认命令（若工单 §6 未指定则用此处）
-# 按项目语言改：
-#   Python:  "pytest tests/ -v"
-#   Node:    "npm test"
-#   Go:      "go test ./..."
-#   Rust:    "cargo test"
-default = "pytest tests/ -v"
+# 镜合项目用 Python，环节 1~4 单测，环节 5 起加集成测试与压力测试
+default = "pytest tests/unit/ -v"
 
 [file_atomic]
 # 原子写约定：临时后缀

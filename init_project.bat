@@ -89,7 +89,7 @@ echo   2) Fill in %PROJECT_ROOT%\docs\TECH_DESIGN.md
 echo   3) Fill in %PROJECT_ROOT%\docs\EXECUTION_PLAN.md (this drives the workflow)
 echo   4) Edit %PROJECT_ROOT%\plan\PLAN_BACKLOG.md to seed your tasks
 echo   5) Start the three AI clients ^(planner / executor / auditor^)
-echo   6) Configure and start the bus (Workbuddy) per bus_setup\BUS_SETUP_GUIDE.md
+echo   6) Configure and start the bus (RPA) per bus_setup\BUS_SETUP_GUIDE.md
 echo   7) Run bootstrap.bat to drop the first signal
 echo.
 

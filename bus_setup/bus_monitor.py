@@ -1,4 +1,4 @@
-# 大总管（WorkBuddy）总线监听与路由脚本 V7.2
+# 大总管（RPA）总线监听与路由脚本 V7.2
 # 基于 BUS_SETUP_GUIDE.md V6.0 实现
 # 功能：5秒轮询Shadow/目录 → TRIGGER_*.md路由分发 → 窗口激活+视觉注入+回车发送
 #
@@ -37,7 +37,7 @@ GIT_COMMIT_BAT = BUS_SETUP_DIR / "git_commit.bat"
 POLL_INTERVAL = 5       # 轮询间隔(秒)
 LISTEN_TIMEOUT = 1200    # 超时告警(秒)
 
-WINDOW_PATTERNS = {"planner": "Kiro", "executor": "Codex", "auditor": "WorkBuddy"}
+WINDOW_PATTERNS = {"planner": "Kiro", "executor": "Codex", "auditor": "RPA"}
 WEBHOOK_URL = ""
 LOG_FILE = SHADOW_DIR / "_bus_log.txt"
 WEBHOOK_FALLBACK_LOG = SHADOW_DIR / "_webhook_fallback.log"
@@ -293,7 +293,7 @@ def get_input_coords(rect, window_title):
     不同应用的布局不同：
     - Kiro (Electron桌面应用): 输入框在底部45px
     - Codex (浏览器应用chatgpt.com): 输入框在底部120px（浏览器有工具栏/状态栏）
-    - WorkBuddy: 待实测，先用通用值
+    - RPA: 待实测，先用通用值
     """
     win_w = rect.right - rect.left
     win_h = rect.bottom - rect.top
