@@ -1,5 +1,16 @@
 # 通用 AI 协作开发工作流 V6.0
 
+<div align="center">
+
+[![GitHub stars](https://img.shields.io/github/stars/mountopjh/workflow?style=flat-square)](https://github.com/mountopjh/workflow/stargazers)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Author](https://img.shields.io/badge/Author-mountopjh-blue.svg)](https://github.com/mountopjh)
+
+</div>
+
+---
+
+
 > 规划师（规划）─ 执行者（执行）─ 审计员（审计）─ 大总管（总线） 四角协同  
 > 文件驱动通信 · `.tmp` 原子重命名 · 抗提示注入 · 3 次驳回熔断 · 第一性原理穿透  
 > 适用范围：任何项目（语言/技术栈无关）
